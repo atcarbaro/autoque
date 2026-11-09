@@ -1,21 +1,50 @@
+import { useMutation, useMutationState, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState, type FormEvent } from "react";
-import { createCar, setFavorite } from "./api";
+import { ApiError, carsKey, createCar, setFavorite, type FavoriteChange } from "./api";
 import { CarArt, Icon } from "./art";
 import { filterCars, formatKm, formatPrice, type Car, type CarFilters } from "../lib/cars";
 
 const defaults: CarFilters = { search: "", make: "", maxPrice: "", favoritesOnly: false, sort: "recent" };
 const name = (car: Car) => car.make + " " + car.model;
+const favoriteKey = ["cars", "favorite"] as const;
 
-export default function Garage({ initialCars }: { initialCars: Car[] }) {
-  const [cars, setCars] = useState(initialCars);
+export default function Garage({ cars }: { cars: Car[] }) {
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState(defaults);
   const [selected, setSelected] = useState<number[]>([]);
   const [notice, setNotice] = useState("");
-  const [formError, setFormError] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [pending, setPending] = useState<number[]>([]);
   const addDialog = useRef<HTMLDialogElement>(null);
   const compareDialog = useRef<HTMLDialogElement>(null);
+
+  const registration = useMutation({
+    mutationFn: createCar,
+    onSuccess: async (car) => {
+      await queryClient.cancelQueries({ queryKey: carsKey });
+      queryClient.setQueryData<Car[]>(carsKey, (current = []) => [car, ...current.filter(({ id }) => id !== car.id)]);
+      setFilters(defaults);
+      setNotice(name(car) + " se agregó a tus autos.");
+    },
+  });
+  const favorite = useMutation({
+    mutationKey: favoriteKey,
+    mutationFn: setFavorite,
+    onSuccess: async (car) => {
+      await queryClient.cancelQueries({ queryKey: carsKey });
+      queryClient.setQueryData<Car[]>(carsKey, (current) => current?.map((item) => item.id === car.id ? car : item));
+      setNotice(car.favorite ? name(car) + " se guardó en favoritos." : name(car) + " se quitó de favoritos.");
+    },
+    onError: (error) => setNotice(error instanceof ApiError
+      ? error.message
+      : "Se interrumpió la conexión. Actualiza la página y vuelve a intentarlo."),
+  });
+  const pending = useMutationState({
+    filters: { mutationKey: favoriteKey, exact: true, status: "pending" },
+    select: ({ state }) => (state.variables as FavoriteChange).id,
+  });
+  const saving = registration.isPending;
+  const formError = registration.isError && (registration.error instanceof ApiError
+    ? registration.error.message
+    : "Se interrumpió la conexión. Cierra y actualiza la página para comprobar si se guardó la ficha.");
 
   const favorites = cars.filter((car) => car.favorite).length;
   const makes = [...new Set(cars.map((car) => car.make))].sort((a, b) => a.localeCompare(b, "es"));
@@ -39,49 +68,20 @@ export default function Garage({ initialCars }: { initialCars: Car[] }) {
     }
   }
 
-  async function favorite(car: Car) {
-    setPending((current) => [...current, car.id]);
-    try {
-      const result = await setFavorite(car.id, !car.favorite);
-      if ("error" in result) {
-        setNotice(result.error);
-        return;
-      }
-      setCars((current) => current.map((item) => item.id === car.id ? result.car : item));
-      setNotice(result.car.favorite ? name(car) + " se guardó en favoritos." : name(car) + " se quitó de favoritos.");
-    } catch {
-      setNotice("Se interrumpió la conexión. Actualiza la página y vuelve a intentarlo.");
-    } finally {
-      setPending((current) => current.filter((id) => id !== car.id));
-    }
-  }
-
   function openRegistration() {
-    setFormError("");
+    registration.reset();
     addDialog.current?.showModal();
   }
 
-  async function register(event: FormEvent<HTMLFormElement>) {
+  function register(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    setSaving(true);
-    setFormError("");
-    try {
-      const result = await createCar(new FormData(form));
-      if ("error" in result) {
-        setFormError(result.error);
-        return;
-      }
-      setCars((current) => [result.car, ...current]);
-      setFilters(defaults);
-      setNotice(name(result.car) + " se agregó a tus autos.");
-      form.reset();
-      addDialog.current?.close();
-    } catch {
-      setFormError("Se interrumpió la conexión. Cierra y actualiza la página para comprobar si se guardó la ficha.");
-    } finally {
-      setSaving(false);
-    }
+    registration.mutate(new FormData(form), {
+      onSuccess: () => {
+        form.reset();
+        addDialog.current?.close();
+      },
+    });
   }
 
   return (
@@ -132,7 +132,7 @@ export default function Garage({ initialCars }: { initialCars: Car[] }) {
                 <article className="card" key={car.id} data-selected={checked}>
                   <div className="art-wrap">
                     <CarArt sample={car.sample_key} />
-                    <button className="heart icon-button" aria-pressed={car.favorite} aria-label={"Favorito: " + name(car)} disabled={pending.includes(car.id)} onClick={() => favorite(car)}><Icon name="heart" /></button>
+                    <button className="heart icon-button" aria-pressed={car.favorite} aria-label={"Favorito: " + name(car)} disabled={pending.includes(car.id)} onClick={() => favorite.mutate({ id: car.id, favorite: !car.favorite })}><Icon name="heart" /></button>
                   </div>
                   <div className="card-content">
                     <p className="car-year">{car.year}</p>

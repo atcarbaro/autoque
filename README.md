@@ -38,7 +38,7 @@ Para agregar tablas o columnas, crea un archivo numerado en `db/migrations/` con
 
 ## Código y compilación
 
-- `client/` contiene la interfaz React y las llamadas a la API.
+- `client/` contiene la interfaz React y usa TanStack React Query para consultar el inventario y guardar altas y favoritos.
 - `server/cars.ts` expone `GET /api/cars`, `POST /api/cars` y `PATCH /api/cars/:id/favorite`.
 - `server/db.ts` configura Knex para PostgreSQL embebido o externo.
 - `lib/cars.ts` contiene los tipos, filtros y formato de unidades.
