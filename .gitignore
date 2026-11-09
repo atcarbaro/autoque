@@ -1,0 +1,25 @@
+# Dependencias y compilación
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+*.log
+
+# Variables locales y credenciales
+.env*
+!.env.example
+.npmrc
+secrets/
+credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Bases locales, exportaciones y respaldos
+.data/
+backups/
+dumps/
+*.dump
+*.backup
+*.sql.gz
