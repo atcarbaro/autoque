@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./styles.css";
 
 export const metadata: Metadata = {
-  title: "Autoficha · Comparador de autos usados",
+  title: "Autoque · Comparador de autos usados",
   description: "Registra, guarda y compara tus opciones de autos usados.",
 };
 

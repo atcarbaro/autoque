@@ -1,4 +1,4 @@
-# Autoficha
+# Autoque
 
 Comparador personal de autos usados hecho con Next.js (App Router), TypeScript y PostgreSQL. Incluye cuatro fichas ficticias en soles peruanos, entre ellas un Audi Q5 y un BMW X3. Las ilustraciones son genéricas.
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Abre [http://127.0.0.1:3000](http://127.0.0.1:3000). La primera visita inicializa PostgreSQL embebido con PGlite. Las fichas y favoritos se conservan en `.data/autoficha` al recargar o reiniciar el servidor. Ejecuta una instancia de la aplicación por carpeta de datos.
+Abre [http://127.0.0.1:3000](http://127.0.0.1:3000). La primera visita inicializa PostgreSQL embebido con PGlite. Las fichas y favoritos se conservan en `.data/autoque` al recargar o reiniciar el servidor. Si actualizas desde la versión anterior en la misma carpeta, Autoque reutiliza `.data/autoficha` cuando aún no existe `.data/autoque`. Ejecuta una instancia de la aplicación por carpeta de datos.
 
 ## Conectar un servidor PostgreSQL
 
@@ -22,6 +22,8 @@ Abre [http://127.0.0.1:3000](http://127.0.0.1:3000). La primera visita inicializ
 Git ignora `.env`, `.env.local` y las demás variantes locales de entorno, además de `.data/`, archivos de claves y carpetas de credenciales y respaldos. `.env.example` contiene solo marcadores. Si exportas un respaldo SQL, guárdalo dentro de `backups/` o `dumps/`.
 
 El inicializador crea la tabla y agrega los ejemplos de forma repetible. La base embebida y la externa son independientes. Usa una base dedicada a esta demo, que funciona como un inventario local de un solo usuario.
+
+Si ya usabas Docker con la versión anterior, detén el contenedor previo y conserva su `DATABASE_URL` y su contraseña. En `.env`, define también `POSTGRES_USER` y `POSTGRES_DB` con los valores anteriores (`autoficha` por defecto) y `POSTGRES_VOLUME` con el nombre del volumen existente. Puedes consultarlo con `docker volume ls`. Luego levanta el servicio `db`.
 
 ## Recorrido de demo
 

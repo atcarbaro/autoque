@@ -89,7 +89,7 @@ export default function Garage({ initialCars }: { initialCars: Car[] }) {
   return (
     <div className="workspace">
       <aside className="sidebar">
-        <div className="brand"><span className="brand-icon"><Icon name="logo" /></span><div>autoficha<span>MI GARAJE DIGITAL</span></div></div>
+        <div className="brand"><span className="brand-icon"><Icon name="logo" /></span><div>autoque<span>MI GARAJE DIGITAL</span></div></div>
         <nav aria-label="Vistas de inventario">
           <p>ESPACIO DE TRABAJO</p>
           <button aria-pressed={!filters.favoritesOnly} onClick={() => changeFilter("favoritesOnly", false)}><Icon name="grid" />Mis autos <span>{cars.length}</span></button>
@@ -109,7 +109,7 @@ export default function Garage({ initialCars }: { initialCars: Car[] }) {
               <button className="primary" onClick={openRegistration}><Icon name="plus" /> Registrar auto</button>
             </div>
             <div className="hero-index" aria-hidden="true">
-              <span className="hero-index-tag">AUTOFICHA / 01</span>
+              <span className="hero-index-tag">AUTOQUE / 01</span>
               <svg viewBox="0 0 220 134"><circle cx="110" cy="67" r="45"/><circle cx="110" cy="67" r="60" strokeDasharray="2 5"/><path d="M10 67h200M110 5v124M40 105h140M40 30h140"/><path d="m77 66 12-22h42l12 22v22H77zM77 66h66M86 74h6m36 0h6m-50 14v9m52-9v9"/></svg>
               <span>REGISTRA · GUARDA · COMPARA</span>
             </div>

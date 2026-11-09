@@ -2,17 +2,18 @@ services:
   db:
     image: postgres:17
     environment:
-      POSTGRES_DB: autoficha
-      POSTGRES_USER: autoficha
+      POSTGRES_DB: "${POSTGRES_DB:-autoque}"
+      POSTGRES_USER: "${POSTGRES_USER:-autoque}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el archivo .env}"
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
-      - autoficha_data:/var/lib/postgresql/data
+      - autoque_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U autoficha -d autoficha"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 2s
       timeout: 3s
       retries: 15
 volumes:
-  autoficha_data:
+  autoque_data:
+    name: "${POSTGRES_VOLUME:-${COMPOSE_PROJECT_NAME}_autoque_data}"
