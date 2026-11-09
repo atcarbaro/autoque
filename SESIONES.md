@@ -4,7 +4,7 @@ Usa el mismo commit inicial, las mismas fichas ficticias y el mismo enunciado pa
 
 ## 1. Historial de precios
 
-**Enunciado.** Permite editar el precio de una ficha y consultar sus cambios. Trabaja sobre `db/setup.sql`, `app/actions.ts` y la interfaz del inventario. Define cómo actualizar una base que ya contiene autos de la demo o del usuario.
+**Enunciado.** Permite editar el precio de una ficha y consultar sus cambios. Añade una migración en `db/migrations/`, amplía la API en `server/cars.ts` y actualiza la interfaz del inventario. Define cómo migrar una base que ya contiene autos de la demo o del usuario.
 
 **Criterios de aceptación**
 

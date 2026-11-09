@@ -1,7 +1,5 @@
-"use client";
-
 import { useRef, useState, type FormEvent } from "react";
-import { createCar, setFavorite } from "./actions";
+import { createCar, setFavorite } from "./api";
 import { CarArt, Icon } from "./art";
 import { filterCars, formatKm, formatPrice, type Car, type CarFilters } from "../lib/cars";
 
